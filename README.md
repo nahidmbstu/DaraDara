@@ -9,6 +9,15 @@ This Chrome extension allows users to track product prices on Daraz and receive 
 - Background service checks prices periodically (every 6 hours)
 - Clean, user-friendly popup interface
 
+
+**Screenshots:**
+
+![Popup Interface](images/Screenshot%202025-04-20%20at%205.22.51%E2%80%AFPM.png)
+*The popup interface for searching and tracking products.*
+
+![Price History](images/Screenshot%202025-04-20%20at%205.23.11%E2%80%AFPM.png)
+*View of price history and alerts.*
+
 **License:**
 
 This project is licensed under the MIT License. See the LICENSE file for details.
