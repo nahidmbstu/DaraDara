@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "Daraz Price Tracker",
+  "version": "1.0",
+  "description": "Track price history for Daraz Bangladesh products",
+  "permissions": ["scripting", "activeTab", "storage", "alarms", "notifications"],
+  "host_permissions": ["https://www.daraz.com.bd/*"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "images/icon16.png",
+      "48": "images/icon48.png",
+      "128": "images/icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [{
+    "matches": ["https://www.daraz.com.bd/products/*"],
+    "js": ["content.js"]
+  }],
+  "icons": {
+    "16": "images/icon16.png",
+    "48": "images/icon48.png",
+    "128": "images/icon128.png"
+  }
+}

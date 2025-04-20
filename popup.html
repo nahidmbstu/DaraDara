@@ -1,0 +1,269 @@
+// Copyright (c) 2025 MD NAHID HASAN
+// Licensed under the MIT License. See LICENSE file for details.
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Daraz Price Tracker</title>
+  <style>
+    body {
+      width: 400px;
+      padding: 15px;
+      font-family: Arial, sans-serif;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .search-section, .tracked-section {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    button {
+      width: 100%;
+      padding: 8px 12px;
+      background-color: #f57224;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background-color: #d65c15;
+    }
+    .tabs {
+      display: flex;
+      margin-bottom: 15px;
+      border-bottom: 1px solid #ddd;
+    }
+    .tab {
+      padding: 8px 16px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+    }
+    .tab.active {
+      border-bottom-color: #f57224;
+      color: #f57224;
+    }
+    #results, #trackedProducts {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .product-card {
+      padding: 12px;
+      border: 1px solid #eee;
+      border-radius: 4px;
+      margin-bottom: 10px;
+      background: white;
+    }
+    .product-card:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .product-title {
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    .price-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #f57224;
+    }
+    .chart-container {
+      height: 100px;
+      margin: 10px 0;
+      position: relative;
+    }
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 8px;
+      font-size: 12px;
+    }
+    .stat {
+      text-align: center;
+      background: #f5f5f5;
+      padding: 4px;
+      border-radius: 4px;
+    }
+    .alert-controls {
+      margin-top: 10px;
+      padding: 10px;
+      background: #f8f8f8;
+      border-radius: 4px;
+    }
+    .alert-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .alert-input {
+      width: 100px;
+      padding: 4px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .alert-button {
+      padding: 4px 8px;
+      background: #f57224;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .price-trend {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 12px;
+      margin-left: 8px;
+    }
+    .price-up {
+      background: #ffe6e6;
+      color: #d32f2f;
+    }
+    .price-down {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+    .active-alerts {
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+    }
+    .alert-badge {
+      display: inline-block;
+      padding: 2px 6px;
+      background: #f0f0f0;
+      border-radius: 3px;
+      margin-right: 5px;
+    }
+    .time-range {
+      display: flex;
+      gap: 10px;
+      margin: 10px 0;
+      font-size: 12px;
+    }
+    .time-button {
+      padding: 4px 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background: white;
+      cursor: pointer;
+    }
+    .time-button.active {
+      background: #f57224;
+      color: white;
+      border-color: #f57224;
+    }
+    .product-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+    }
+    .loading-spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #f57224;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="tabs">
+      <div class="tab active" data-tab="search">Search</div>
+      <div class="tab" data-tab="tracked">Tracked Products</div>
+    </div>
+    
+    <div id="searchSection" class="search-section">
+      <input type="text" id="searchInput" placeholder="Enter product name...">
+      <button id="searchButton">Search</button>
+      <div id="results"></div>
+    </div>
+    
+    <div id="trackedSection" class="tracked-section" style="display: none;">
+      <div id="trackedProducts"></div>
+    </div>
+  </div>
+  
+  <template id="productCardTemplate">
+    <div class="product-card">
+      <div class="product-title">
+        <a href="" target="_blank"></a>
+        <span class="price-trend"></span>
+      </div>
+      <div class="price-info">
+        <span class="current-price"></span>
+      </div>
+      <div class="chart-container">
+        <canvas></canvas>
+      </div>
+      <div class="time-range">
+        <button class="time-button" data-days="7">7d</button>
+        <button class="time-button" data-days="30">30d</button>
+        <button class="time-button active" data-days="90">90d</button>
+      </div>
+      <div class="stats">
+        <div class="stat">
+          <div>Lowest</div>
+          <strong class="lowest-price"></strong>
+        </div>
+        <div class="stat">
+          <div>Highest</div>
+          <strong class="highest-price"></strong>
+        </div>
+        <div class="stat">
+          <div>Tracked</div>
+          <strong class="tracking-duration"></strong>
+        </div>
+      </div>
+      <div class="alert-controls">
+        <div class="alert-row">
+          <input type="number" class="alert-input below-price" placeholder="Below ">
+          <button class="alert-button set-below-alert">Set Alert</button>
+        </div>
+        <div class="alert-row">
+          <input type="number" class="alert-input above-price" placeholder="Above ">
+          <button class="alert-button set-above-alert">Set Alert</button>
+        </div>
+        <div class="active-alerts"></div>
+      </div>
+      <div class="product-meta">
+        <span class="last-updated"></span>
+        <button class="track-button">Stop Tracking</button>
+      </div>
+    </div>
+  </template>
+  
+  <script src="popup.js"></script>
+</body>
+</html>
